@@ -36,3 +36,10 @@
     transform: rotate(360deg);
   }
 }
+
+.search-bar {
+  width: 40%;
+}
+.logIn-button {
+  margin-right: 5%;
+}

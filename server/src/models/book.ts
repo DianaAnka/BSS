@@ -14,10 +14,10 @@ const bookSchema: Schema = new Schema(
     },
 
     content: {
-      type: Boolean,
+      type: String,
     },
     abstract: {
-      type: Boolean,
+      type: String,
     },
     tags: {
       type: [String],

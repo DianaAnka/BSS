@@ -1,53 +1,28 @@
-import React, { useEffect, useState } from 'react'
-import User from './components/profile'
-import { getUsers } from './API'
+import React from "react";
+import "./App.css";
+import { MDBCol } from "mdbreact";
+import { Link, Route, BrowserRouter as Router } from "react-router-dom";
+import Login from "./components/login";
 
-const App: React.FC = () => {
-  const [users, setUsers] = useState<IUser[]>([])
-
-  useEffect(() => {
-    fetchUsers()
-  }, [])
-
-  const fetchUsers = (): void => {
-    getUsers()
-    .then(({ data: { users } }: IUser[] | any) => setUsers(users))
-    .catch((err: Error) => console.log(err))
-  }
-  // const handleUpdateUser = (user: IUser , formData:IUser): void => {
-  //   updateUser(user,formData)
-  //     .then(({ status, data }) => {
-  //       if (status !== 200) {
-  //         throw new Error("Error! Todo not updated")
-  //       }
-  //       setUsers(data.users)
-  //     })
-  //     .catch(err => console.log(err))
-  // }
-  
-  // const handleDeleteUser = (_id: string): void => {
-  //   deleteUser(_id)
-  //     .then(({ status, data }) => {
-  //       if (status !== 200) {
-  //         throw new Error("Error! Todo not deleted")
-  //       }
-  //       setUsers(data.users)
-  //     })
-  //     .catch(err => console.log(err))
-  // }
+function App() {
   return (
-    <main className='App'>
-      <h1>My Profile</h1>
-      {users.map((user: IUser) => (
-        <User
-          key={user._id}
-          // updateUser={handleUpdateUser}
-          // deleteUser={handleDeleteUser}
-          user={user}
-        />
-      ))}
-    </main>
-  )
+    <Router>
+      <div className="App">
+        <MDBCol md="6">
+          <button className="logIn-button">
+            <Link to="/login">Login</Link>
+          </button>
+          <input
+            className="form-control search-bar"
+            type="text"
+            placeholder="Search"
+            aria-label="Search"
+          />
+        </MDBCol>
+        <Route path="/login" component={Login} />
+      </div>
+    </Router>
+  );
 }
 
-export default App
+export default App;
