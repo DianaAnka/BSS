@@ -10,6 +10,27 @@ app.use(json());
 const jwt = require("jsonwebtoken");
 const cookieParser = require("cookie-parser");
 app.use(cookieParser());
+
+//register route
+app.post("/api/register", function (req, res) {
+  const { email, password } = req.body;
+  const user = new User({ email, password });
+  user.save(function (err) {
+    if (err) {
+      res
+        .status(500)
+        .send("Error registering new user please try again." + err);
+    } else {
+      const payload = { email };
+      const token = jwt.sign(payload, secret, {
+        expiresIn: "1h",
+      });
+      res.cookie("token", token, { httpOnly: true }).sendStatus(200);
+    }
+  });
+});
+
+//authentication route
 app.post("/api/authenticate", function (req, res) {
   const { email, password } = req.body;
   User.findOne({ email }, function (err: any, user: any) {
@@ -44,6 +65,8 @@ app.post("/api/authenticate", function (req, res) {
     }
   });
 });
+
+//connecting to the database
 mongoose.connect(
   "mongodb://localhost:27017/bss",
   {
@@ -59,9 +82,13 @@ mongoose.connect(
     }
   }
 );
-app.get("/api/secret", withAuth, function (req, res) {
-  res.send("The password is potato");
+
+//get profile page after being registering
+app.get("/api/profile", withAuth, function (req, res) {
+  res.send("Welcome back");
 });
-app.listen(8080, () => {
-  console.log("server is listening on port 8080");
+
+
+app.listen(5000, () => {
+  console.log("server is listening on port 5000");
 });

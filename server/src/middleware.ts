@@ -8,7 +8,7 @@ interface MulterRequest extends express.Request {
 const withAuth = function (
   req: express.Request,
   res: express.Response,
-  next: any
+  next: express.NextFunction
 ) {
   const token = req.cookies.token;
   if (!token) {

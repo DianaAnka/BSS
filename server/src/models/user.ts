@@ -7,7 +7,6 @@ const userSchema: Schema<IUser> = new Schema<IUser>(
   {
     name: {
       type: String,
-      required: true,
     },
 
     email: {
@@ -17,15 +16,14 @@ const userSchema: Schema<IUser> = new Schema<IUser>(
     },
 
     password: {
-      type: Boolean,
+      type: String,
       required: true,
     },
     profilePic: {
-      type: Boolean,
+      type: String,
     },
     roles: {
       type: [String],
-      required: true,
     },
     rates: {
       type: Map,
