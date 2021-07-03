@@ -11,23 +11,46 @@ const jwt = require("jsonwebtoken");
 const cookieParser = require("cookie-parser");
 app.use(cookieParser());
 
+//to check if email syntax is valid
+function validateEmail(email: string) {
+  const re =
+    /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  return re.test(email);
+}
+
+//to check password length
+function validatePassword(password: string) {
+  if (password.length >= 8 && password.length <= 30) return true;
+  return false;
+}
+
 //register route
 app.post("/api/register", function (req, res) {
   const { email, password } = req.body;
-  const user = new User({ email, password });
-  user.save(function (err) {
-    if (err) {
-      res
-        .status(500)
-        .send("Error registering new user please try again." + err);
-    } else {
-      const payload = { email };
-      const token = jwt.sign(payload, secret, {
-        expiresIn: "1h",
+  if (!validateEmail(email))
+    return res.status(400).send("Error email syntax is invalid");
+  else if (!validatePassword(password))
+    return res.status(400).send("Error pasword length must be between 8 & 30 ");
+  else {
+    const user = new User({ email, password });
+    User.findOne({ email: user.email }, function (err: any, userFounded: any) {
+      if (userFounded)
+        return res.status(400).json({ auth: false, message: "email exits" });
+      user.save(function (err: any) {
+        if (err) {
+          res
+            .status(500)
+            .send("Error registering new user please try again." + err);
+        } else {
+          const payload = { email };
+          const token = jwt.sign(payload, secret, {
+            expiresIn: "1h",
+          });
+          res.cookie("token", token, { httpOnly: true }).sendStatus(200);
+        }
       });
-      res.cookie("token", token, { httpOnly: true }).sendStatus(200);
-    }
-  });
+    });
+  }
 });
 
 //authentication route
@@ -87,7 +110,6 @@ mongoose.connect(
 app.get("/api/profile", withAuth, function (req, res) {
   res.send("Welcome back");
 });
-
 
 app.listen(5000, () => {
   console.log("server is listening on port 5000");
