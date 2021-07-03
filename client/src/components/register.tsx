@@ -99,7 +99,7 @@ const reducer = (state: State, action: Action): State => {
   }
 };
 
-const Login = () => {
+const Register = () => {
   const classes = useStyles();
   const [state, dispatch] = useReducer(reducer, initialState);
 
@@ -117,18 +117,50 @@ const Login = () => {
     }
   }, [state.email, state.password]);
 
+  //to check if email syntax is valid
+  function validateEmail(email: string) {
+    const re =
+      /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(email);
+  }
+
+  //to check password length
+  function validatePassword(password: string) {
+    if (password.length >= 8 && password.length <= 30) return true;
+    return false;
+  }
+
   const handleLogin = () => {
-    if (state.email === "abc@email.com" && state.password === "password") {
-      dispatch({
-        type: "loginSuccess",
-        payload: "Login Successfully",
+    const requestOptions = {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: state.email, password: state.password }),
+    };
+    fetch("/api/register", requestOptions)
+      .then(async (response) => {
+        const isJson = response.headers
+          .get("content-type")
+          ?.includes("application/json");
+        const data = isJson && (await response.json());
+        // check for error response
+        if (!response.ok) {
+          console.log("not ok ");
+          // get error message from body or default to response status
+          const error = (data && data.message) || response.status;
+          return Promise.reject(error);
+        }
+        dispatch({
+          type: "loginSuccess",
+          payload: "Login Successfully",
+        });
+      })
+      .catch((error) => {
+        dispatch({
+          type: "loginFailed",
+          payload: "Incorrect email or password",
+        });
+        console.error("There was an error!", error);
       });
-    } else {
-      dispatch({
-        type: "loginFailed",
-        payload: "Incorrect email or password",
-      });
-    }
   };
 
   const handleKeyPress = (event: React.KeyboardEvent) => {
@@ -157,7 +189,7 @@ const Login = () => {
   return (
     <form className={classes.container} noValidate autoComplete="off">
       <Card className={classes.card}>
-        <CardHeader className={classes.header} title="Login" />
+        <CardHeader className={classes.header} title="Register" />
         <CardContent>
           <div>
             <TextField
@@ -170,7 +202,11 @@ const Login = () => {
               margin="normal"
               onChange={handleEmailChange}
               onKeyPress={handleKeyPress}
-              helperText={state.isError ? "enter valid email" : ""}
+              helperText={
+                state.email && !validateEmail(state.email)
+                  ? "enter valid email"
+                  : ""
+              }
             />
             <TextField
               error={state.isError}
@@ -180,11 +216,10 @@ const Login = () => {
               label="Password"
               placeholder="Password"
               margin="normal"
-              // helperText={state.helperText}
               onChange={handlePasswordChange}
               onKeyPress={handleKeyPress}
               helperText={
-                state.isError
+                state.password && !validatePassword(state.password)
                   ? "password must be between 8 - 30 characters"
                   : ""
               }
@@ -200,18 +235,18 @@ const Login = () => {
             onClick={handleLogin}
             disabled={state.isButtonDisabled}
           >
-            Login
+            Register
           </Button>
-          <Link className={classes.link} to="/register">
+          <Link className={classes.link} to="/login">
             <Button
-              variant="contained"
               size="large"
+              variant="contained"
               color="secondary"
               className={classes.loginBtn}
               // onClick={handleLogin}
               // disabled={state.isButtonDisabled}
             >
-              Register
+              Login
             </Button>
           </Link>
         </CardActions>
@@ -220,4 +255,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Register;

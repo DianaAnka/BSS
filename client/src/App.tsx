@@ -3,6 +3,7 @@ import "./App.css";
 import { MDBCol } from "mdbreact";
 import { Link, Route, BrowserRouter as Router } from "react-router-dom";
 import Login from "./components/login";
+import Register from "./components/register";
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
           />
         </MDBCol>
         <Route path="/login" component={Login} />
+        <Route path="/register" component={Register} />
       </div>
     </Router>
   );

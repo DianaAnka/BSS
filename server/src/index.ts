@@ -42,11 +42,12 @@ app.post("/api/register", function (req, res) {
             .status(500)
             .send("Error registering new user please try again." + err);
         } else {
-          const payload = { email };
-          const token = jwt.sign(payload, secret, {
-            expiresIn: "1h",
-          });
-          res.cookie("token", token, { httpOnly: true }).sendStatus(200);
+          // const payload = { email };
+          // const token = jwt.sign(payload, secret, {
+          //   expiresIn: "1h",
+          // });
+          // res.cookie("token", token, { httpOnly: true }).sendStatus(200);
+          res.status(200).send("Welcome to the club!");
         }
       });
     });
