@@ -28,8 +28,7 @@ app.post("/api/register", function (req, res) {
   else {
     const user = new User({ email, password });
     User.findOne({ email: user.email }, function (err: any, userFounded: any) {
-      if (userFounded)
-        return res.status(400).json({ auth: false, message: "email exits" });
+      if (userFounded) return res.status(400).send("Error email exits");
       user.save(function (err: any) {
         if (err) {
           res
@@ -40,7 +39,6 @@ app.post("/api/register", function (req, res) {
     });
   }
 });
-
 
 app.post("/api/authenticate", function (req, res) {
   const { email, password } = req.body;
