@@ -50,7 +50,8 @@ userSchema.pre("save", function (next) {
     next();
   }
 });
-userSchema.methods.isCorrectPassword = function (password, callback) {
+
+userSchema.methods.isCorrectPassword = function (password: string, callback) {
   compare(password, this.password, function (err, same) {
     if (err) {
       callback(err);
