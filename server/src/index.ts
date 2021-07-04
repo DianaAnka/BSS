@@ -2,14 +2,13 @@ import express from "express";
 import { json } from "body-parser";
 import mongoose from "mongoose";
 import User from "./models/user";
+import withAuth from "./middleware";
+import jwt from "jsonwebtoken";
+import cookieParser from "cookie-parser";
 
 const app = express();
-const withAuth = require("./middleware");
 require("dotenv").config();
-const secret = process.env.API_KEY;
 app.use(json());
-const jwt = require("jsonwebtoken");
-const cookieParser = require("cookie-parser");
 app.use(cookieParser());
 
 //to check if email syntax is valid
@@ -81,7 +80,7 @@ app.post("/api/authenticate", function (req, res) {
         } else {
           // Issue token
           const payload = { email };
-          const token = jwt.sign(payload, secret, {
+          const token = jwt.sign(payload, process.env.API_KEY as string, {
             expiresIn: "1h",
           });
           res.cookie("token", token, { httpOnly: true }).sendStatus(200);

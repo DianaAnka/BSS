@@ -1,8 +1,7 @@
 import * as express from "express";
+import jwt from "jsonwebtoken";
 
-const jwt = require("jsonwebtoken");
 require("dotenv").config();
-const secret = process.env.API_KEY;
 interface MulterRequest extends express.Request {
   email: any;
 }
@@ -15,14 +14,18 @@ const withAuth = function (
   if (!token) {
     res.status(401).send("Unauthorized: No token provided");
   } else {
-    jwt.verify(token, secret, function (err: any, decoded: any) {
-      if (err) {
-        res.status(401).send("Unauthorized: Invalid token");
-      } else {
-        (req as MulterRequest).email = decoded.email;
-        next();
+    jwt.verify(
+      token,
+      process.env.API_KEY as string,
+      function (err: any, decoded: any) {
+        if (err) {
+          res.status(401).send("Unauthorized: Invalid token");
+        } else {
+          (req as MulterRequest).email = decoded.email;
+          next();
+        }
       }
-    });
+    );
   }
 };
-module.exports = withAuth;
+export default withAuth;
