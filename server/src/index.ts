@@ -2,7 +2,7 @@ import express from "express";
 import { json } from "body-parser";
 import mongoose from "mongoose";
 
-import withAuth from "./middleware";
+import withAuth from "./middlewares/withAuthMiddleware";
 
 import cookieParser from "cookie-parser";
 import router from "./routes";
