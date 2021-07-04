@@ -19,7 +19,6 @@ const yupObjectPassword = yup.object().shape({
   password: yup.string().required().min(8).max(30),
 });
 
-//register route
 app.post("/api/register", function (req, res) {
   const { email, password } = req.body;
   if (!yupObjectEmail.validate({ email: email }))
@@ -42,7 +41,7 @@ app.post("/api/register", function (req, res) {
   }
 });
 
-//authentication route
+
 app.post("/api/authenticate", function (req, res) {
   const { email, password } = req.body;
   User.findOne({ email }, function (err: any, user: any) {
