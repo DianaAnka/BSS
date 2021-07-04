@@ -27,8 +27,8 @@ app.post("/api/register", function (req, res) {
     return res.status(400).send("Error pasword length must be between 8 & 30 ");
   else {
     const user = new User({ email, password });
-    User.findOne({ email: user.email }, function (err: any, userFounded: any) {
-      if (userFounded) return res.status(400).send("Error email exits");
+    User.findOne({ email: user.email }, function (err: any, userExisting: any) {
+      if (userExisting) return res.status(400).send("Error email exists");
       user.save(function (err: any) {
         if (err) {
           res
@@ -40,7 +40,7 @@ app.post("/api/register", function (req, res) {
   }
 });
 
-app.post("/api/authenticate", function (req, res) {
+app.post("/api/login", function (req, res) {
   const { email, password } = req.body;
   User.findOne({ email }, function (err: any, user: any) {
     if (err) {
@@ -63,7 +63,6 @@ app.post("/api/authenticate", function (req, res) {
             error: "Incorrect email or password",
           });
         } else {
-          // Issue token
           const payload = { email };
           const token = jwt.sign(payload, process.env.API_KEY as string, {
             expiresIn: "1h",
@@ -75,7 +74,6 @@ app.post("/api/authenticate", function (req, res) {
   });
 });
 
-//connecting to the database
 mongoose.connect(
   "mongodb://localhost:27017/bss",
   {
@@ -92,7 +90,6 @@ mongoose.connect(
   }
 );
 
-//get profile page after being registering
 app.get("/api/profile", withAuth, function (req, res) {
   res.send("Welcome back");
 });
