@@ -5,31 +5,26 @@ import User from "./models/user";
 import withAuth from "./middleware";
 import jwt from "jsonwebtoken";
 import cookieParser from "cookie-parser";
+import * as yup from "yup";
 
 const app = express();
 require("dotenv").config();
 app.use(json());
 app.use(cookieParser());
 
-//to check if email syntax is valid
-function validateEmail(email: string) {
-  const re =
-    /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-  return re.test(email);
-}
-
-//to check password length
-function validatePassword(password: string) {
-  if (password.length >= 8 && password.length <= 30) return true;
-  return false;
-}
+const yupObjectEmail = yup.object().shape({
+  email: yup.string().email().required(),
+});
+const yupObjectPassword = yup.object().shape({
+  password: yup.string().required().min(8).max(30),
+});
 
 //register route
 app.post("/api/register", function (req, res) {
   const { email, password } = req.body;
-  if (!validateEmail(email))
+  if (!yupObjectEmail.validate({ email: email }))
     return res.status(400).send("Error email syntax is invalid");
-  else if (!validatePassword(password))
+  else if (!yupObjectPassword.validate({ password: password }))
     return res.status(400).send("Error pasword length must be between 8 & 30 ");
   else {
     const user = new User({ email, password });
@@ -41,14 +36,7 @@ app.post("/api/register", function (req, res) {
           res
             .status(500)
             .send("Error registering new user please try again." + err);
-        } else {
-          // const payload = { email };
-          // const token = jwt.sign(payload, secret, {
-          //   expiresIn: "1h",
-          // });
-          // res.cookie("token", token, { httpOnly: true }).sendStatus(200);
-          res.status(200).send("Welcome to the club!");
-        }
+        } else res.status(200).send("Welcome to the club!");
       });
     });
   }
