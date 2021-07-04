@@ -1,7 +1,8 @@
 import * as express from "express";
 
 const jwt = require("jsonwebtoken");
-const secret = "mysecretsshhh";
+require("dotenv").config();
+const secret = process.env.API_KEY;
 interface MulterRequest extends express.Request {
   email: any;
 }

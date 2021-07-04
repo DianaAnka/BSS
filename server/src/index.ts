@@ -4,8 +4,9 @@ import mongoose from "mongoose";
 import User from "./models/user";
 
 const app = express();
-const secret = "mysecretsshhh";
 const withAuth = require("./middleware");
+require("dotenv").config();
+const secret = process.env.API_KEY;
 app.use(json());
 const jwt = require("jsonwebtoken");
 const cookieParser = require("cookie-parser");
